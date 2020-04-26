@@ -1,0 +1,77 @@
+{% extends 'todo_main/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="row d-flex justify-content-center container">
+        <div class="col-md-8">
+            <div class="card-hover-shadow-2x mb-3 card">
+                <div class="card-header-tab card-header">
+                    <div class="card-header-title font-size-lg text-capitalize font-weight-normal"><i class="fa fa-tasks"></i>&nbsp;Task Lists</div>
+                    <div class="ml-2">
+                        <a name="complete_all" href="{% url 'todo:complete_all' %}" data-toggle="tooltip" title="Complete all" class="border-0 btn-transition btn btn-outline-success"> <i class="fa fa-check"></i></a> <a name="delete_completed" href="{% url 'todo:delete_completed' %}" data-toggle="tooltip" title="Delete completed" class="border-0 btn-transition btn btn-outline-danger"> <i class="fa fa-trash"></i> </a>
+                        <a name="complete_selected" style="display:none" href="{% url 'todo:complete_selected' %}" data-toggle="tooltip" title="Complete selected" class="border-0 btn-transition btn btn-outline-success"> <i class="fa fa-check"></i></a> <a name="delete_selected" style="display:none" href="{% url 'todo:delete_selected' %}" data-toggle="tooltip" title="Delete selected" class="border-0 btn-transition btn btn-outline-danger"> <i class="fa fa-trash"></i> </a>
+                    </div>
+                </div>
+                <div class="scroll-area-sm">
+                    <perfect-scrollbar class="ps-show-limits">
+                        <div style="position: static;" class="ps ps--active-y">
+                            <div class="ps-content">
+                                <ul class=" list-group list-group-flush">
+                                    {% for todo in todo_list %}
+                                        <li class="list-group-item">
+                                            <!-- <div class="todo-indicator bg-success"></div> -->
+                                            <div class="todo-indicator bg-primary"></div>
+                                            <div class="widget-content p-0">
+                                                <div class="widget-content-wrapper">
+                                                    <div class="widget-content-left mr-2">
+                                                        <div class="custom-checkbox custom-control"><input onclick="myFunction()" name="selected" value="{{ todo.id }}" class="custom-control-input" id="exampleCustomCheckbox{{ forloop.counter }}" type="checkbox"><label class="custom-control-label" for="exampleCustomCheckbox{{ forloop.counter }}">&nbsp;</label></div>
+                                                    </div>
+                                                    <div class="widget-content-left">
+                                                        <div class="widget-heading">
+                                                            {% if todo.complete %}
+                                                                <a href="{% url 'todo:complete' todo.id %}">
+                                                                    <strike>{{ todo.text }}</strike>
+                                                                </a>
+                                                            {% else %}
+                                                                <a href="{% url 'todo:complete' todo.id %}">
+                                                                    {{ todo.text }}
+                                                                </a>
+                                                            {% endif %}
+                                                        </div>
+                                                        <div class="widget-subheading">
+                                                            {% if todo.recent_todo %}
+                                                                <div>{{ todo.author.username }} | Just Now <div class="badge badge-pill badge-info ml-2">NEW</div>
+                                                                </div>
+                                                            {% else %}
+                                                                <div>{{ todo.author.username }} | {{ todo.date_added|date:'F d, Y' }}</div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                    <div class="widget-content-right"> <a href="{% url 'todo:complete' todo.id %}" data-toggle="tooltip" title="Complete it" class="border-0 btn-transition btn btn-outline-success"> <i class="fa fa-check"></i></a> <a href="{% url 'todo:delete' todo.id %}" data-toggle="tooltip" title="Delete it" class="border-0 btn-transition btn btn-outline-danger"> <i class="fa fa-trash"></i> </a> </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </perfect-scrollbar>
+                </div>
+                <!-- <div class="d-block text-right card-footer"><button class="mr-2 btn btn-link btn-sm">Cancel</button><button class="btn btn-primary">Add Task</button></div> -->
+                <form action="{% url 'todo:add' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="d-block card-footer">
+                        <div class="row">
+                            <div class="col-lg-10 col-md-9 col-sm-9 col-9 my-2">
+                                {{ form|crispy }}
+                            </div>
+                            <div class="my-2">
+                                <button class="btn btn-primary">Add Task</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
